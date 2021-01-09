@@ -1,5 +1,5 @@
 import kontra from './node_modules/kontra/kontra.mjs';
-let { Sprite, GameObject } = kontra;
+let { Sprite, GameObject, randInt } = kontra;
 
 let mountainImage = new Image();
 mountainImage.src = "./tappyplane/PNG/rockSnow.png";
@@ -7,38 +7,55 @@ mountainImage.src = "./tappyplane/PNG/rockSnow.png";
 let mountainDownImage = new Image();
 mountainDownImage.src = "./tappyplane/PNG/rockSnowDown.png";
 
-let obstacles = [
-    Sprite({
-        x: 400,
-        y: 250,
-        image: mountainImage
-    }),
-    Sprite({
-        x: 400,
-        y: 250 - 330,
-        image: mountainDownImage
-    })
-];
+let mountain = {
+    dx: -2,
+    update() {
+        this.advance();
+
+        if (this.x < -100) {
+            this.ttl = 0
+        }
+    }
+}
+
+function generateObstacles() {
+    return [
+        Sprite({
+            x: 400,
+            y: 250,
+            image: mountainImage,
+            ...mountain
+        }),
+        Sprite({
+            x: 400,
+            y: 250 - 330,
+            image: mountainDownImage,
+            ...mountain
+        })
+    ];
+}
 
 
 
-function generateMountains() {
+export function generateMountains(obstacles) {
     if (obstacles.length < 15) {
-        let y = Math.random() * (401 - 200) + 200;
-        console.log(y);
-    
+        let y = randInt(200, 400);
+        let x = obstacles[obstacles.length - 1].x + 200;
+        
         obstacles.push(Sprite({
-            x: this.x + 200,
-            y: this.y,
-            image: mountainImage
+            x,
+            y,
+            image: mountainImage,
+            ...mountain
         }));
     
         obstacles.push(Sprite({
-            x: this.x + 200,
-            y: this.y - 330,
-            image: mountainDownImage
+            x,
+            y: y - 330,
+            image: mountainDownImage,
+            ...mountain
         }));
     }
 }
 
-export default obstacles;
+export default generateObstacles;
